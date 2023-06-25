@@ -1,31 +1,18 @@
-#include <HTTPClient.h>
-#include <ArduinoJson.h>
-
-#include "arduino_secrets.h"
 #include "common.h"
-#include "weather-forecast.h"
+#include "home-assistant.h"
 
-WeatherForecast::WeatherForecast(int date, String icon, float min, float max) {
-  this->date = date;
-  this->icon = icon;
-  this->min = min;
-  this->max = max;
-}
-
-
-WeatherForecast::WeatherForecast() {}
-
-OneWeekWeatherForecast WeatherForecastService::get() {
-  OneWeekWeatherForecast oneWeekWeatherForecast;
+HomeAssistant::get() {
   HTTPClient http;
-  http.begin(SECRET_API_OPENWEATHERMAP, SECRET_ROOT_CA);
 
-  String message;
-  message += F("Récupération de la météo");
-  message += F(" (GET ");
-  message += SECRET_API_OPENWEATHERMAP;
-  message += F(")");
-  Serial.println(message);
+String entity = "sensor.temperature_maison";
+
+String homeAssistantURL;
+homeAssistantURL += F("http://");
+homeAssistantURL += SECRET_HOME_ASSISTANT_HOST;
+homeAssistantURL += F("/api/states/");
+homeAssistantURL += entity;
+
+  http.begin(homeAssistantURL);
 
   int httpCode;
   int retry = 0;

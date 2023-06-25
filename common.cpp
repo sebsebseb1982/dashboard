@@ -1,3 +1,6 @@
+#include "common.h"
+
+
 //https://forum.arduino.cc/index.php?topic=642749.0
 /*
 void drawCentreString(const String &buf, int x, int y) {
