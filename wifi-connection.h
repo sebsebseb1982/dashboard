@@ -1,3 +1,6 @@
+#ifndef WIFI_CONNECTION_H
+#define WIFI_CONNECTION_H
+
 #include <Arduino.h>
 
 class WiFiConnection {
@@ -6,3 +9,5 @@ class WiFiConnection {
     static void setup();
     static void loop();
 };
+
+#endif

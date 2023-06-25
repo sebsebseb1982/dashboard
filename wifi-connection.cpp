@@ -1,11 +1,11 @@
 #include <WiFi.h>
 #include "wifi-connection.h"
-#include "secrets.h"
+#include "arduino_secrets.h"
 
 unsigned int WiFiConnection::nbConnection = 0;
 
 void WiFiConnection::setup() {
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.begin(SECRET_WIFI_SSID, SECRET_WIFI_PASSWORD);
   //Serial.print("Connexion en cours ");
   int retry = 0; 
   while (WiFi.status() != WL_CONNECTED) {

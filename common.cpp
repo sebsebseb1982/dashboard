@@ -1,4 +1,5 @@
 //https://forum.arduino.cc/index.php?topic=642749.0
+/*
 void drawCentreString(const String &buf, int x, int y) {
   int16_t x1, y1;
   uint16_t w, h;
@@ -72,3 +73,4 @@ void drawFloatingText(const String &buf, int x, int y, int maxWidth, int &height
 
   height = (lineIndex + 1) * LINE_HEIGHT;
 }
+*/

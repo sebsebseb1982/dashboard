@@ -3,9 +3,10 @@
 #include <Fonts/FreeSans9pt7b.h>
 #include <Fonts/FreeSans12pt7b.h>
 
-#include "common.h"
 #include "wifi-connection.h"
 #include "ota.h"
+#include "weather-forecast.h"
+#include "weather-forecast.icons.h"
 // https://oleddisplay.squix.ch/
 #include "fonts/DejaVu_LGC_Sans_9.h"
 #include "fonts/DejaVu_LGC_Sans_12.h"
@@ -14,12 +15,11 @@
 #include "fonts/48.h"
 #include "fonts/DejaVu_LGC_Sans_72.h"
 #include "fonts/DejaVu_LGC_Sans_96.h"
+#include "common.h"
 
 // base class GxEPD2_GFX can be used to pass references or pointers to the display instance as parameter, uses ~1.2k more code
 // enable or disable GxEPD2_GFX base class
 #define ENABLE_GxEPD2_GFX 0
-
-
 
 GxEPD2_3C< GxEPD2_750c_Z90, GxEPD2_750c_Z90::HEIGHT / 2 > display(GxEPD2_750c_Z90(/*CS=*/15, /*DC=*/27, /*RST=*/26, /*BUSY=*/25));  // GDEH075Z90 880x528
 
@@ -49,22 +49,22 @@ void setup() {
       GxEPD_RED);
 
     display.setTextColor(GxEPD_WHITE);
-    const char HelloEpaper[] = "23.2°C";
+    const char HelloEpaper[] = "23,2°C";
 
     display.setFont(&FreeSans9pt7b);
-    drawCentreString(HelloEpaper, 200, 100);
+    //drawCentreString(HelloEpaper, 200, 100);
 
     display.setFont(&DejaVu_LGC_Sans_32);
-    drawCentreString(HelloEpaper, 200, 200);
+    //drawCentreString(HelloEpaper, 200, 200);
 
     display.setFont(&DejaVu_LGC_Sans_48);
-    drawCentreString(HelloEpaper, 200, 300);
+    //drawCentreString(HelloEpaper, 200, 300);
 
     display.setFont(&DejaVu_LGC_Sans_72);
-    drawCentreString(HelloEpaper, 200, 400);
+    //drawCentreString(HelloEpaper, 200, 400);
 
     display.setFont(&DejaVu_LGC_Sans_96);
-    drawCentreString(HelloEpaper, 200, 500);
+    //drawCentreString(HelloEpaper, 200, 500);
 
   } while (display.nextPage());
 }
