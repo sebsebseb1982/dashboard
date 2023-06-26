@@ -75,10 +75,6 @@ void setup() {
 
     String temperature = HomeAssistant::getEntityState("sensor.temperature_maison");
 
-    drawCentreString(
-      temperature,
-      200,
-      420);
 
     // One week weather forecast
     OneWeekWeatherForecast oneWeekWeatherForecast = WeatherForecastService::get();
@@ -89,8 +85,13 @@ void setup() {
 
     // Quote of the day
     QuoteOfTheDayWidget quoteOfTheDayWidget(
-      QuoteOfTheDayService::get(),
-      &display);
+      0,
+      0,
+      0,
+      0,
+      GxEPD_RED,
+      &display,
+      QuoteOfTheDayService::get());
     quoteOfTheDayWidget.draw();
   } while (display.nextPage());
 }

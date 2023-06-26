@@ -1,12 +1,27 @@
 #include <GxEPD2_3C.h>
 #include "common.h"
+#include "widget.h"
 #include "quote-of-the-day-widget.h"
 #include "quote-of-the-day.h"
 #include "quote-of-the-day.icons.h"
 #include "gfx.h"
 #include "fonts/fonts.h"
 
-QuoteOfTheDayWidget::QuoteOfTheDayWidget(QuoteOfTheDay quoteOfTheDay, GxEPD2_3C<GxEPD2_750c_Z90, 264> *display) {
+QuoteOfTheDayWidget::QuoteOfTheDayWidget(
+  int xPosition,
+  int yPosition,
+  int width,
+  int height,
+  uint16_t backgroundColor,
+GxEPD2_3C<GxEPD2_750c_Z90, 264> *display,
+    QuoteOfTheDay quoteOfTheDay)
+  : Widget(
+    xPosition,
+    yPosition,
+    width,
+    height,
+    backgroundColor,
+    display) {
   this->quoteOfTheDay = quoteOfTheDay;
   this->display = display;
   this->gfx = GFX(display);
