@@ -1,18 +1,24 @@
+#include <HTTPClient.h>
+#include <ArduinoJson.h>
+
 #include "common.h"
+#include "arduino_secrets.h"
 #include "home-assistant.h"
 
-HomeAssistant::get() {
+String HomeAssistant::getEntityState(String entityName) {
   HTTPClient http;
 
-String entity = "sensor.temperature_maison";
-
-String homeAssistantURL;
-homeAssistantURL += F("http://");
-homeAssistantURL += SECRET_HOME_ASSISTANT_HOST;
-homeAssistantURL += F("/api/states/");
-homeAssistantURL += entity;
+  String homeAssistantURL;
+  homeAssistantURL += F("http://");
+  homeAssistantURL += SECRET_HOME_ASSISTANT_HOST;
+  homeAssistantURL += F("/api/states/");
+  homeAssistantURL += entityName;
 
   http.begin(homeAssistantURL);
+  String bearer;
+  bearer += F("Bearer ");
+  bearer += SECRET_HOME_ASSISTANT_TOKEN;
+  http.addHeader("Authorization", bearer);
 
   int httpCode;
   int retry = 0;
@@ -34,19 +40,10 @@ homeAssistantURL += entity;
     if (error) {
       Serial.print(F("deserializeJson() failed: "));
       Serial.println(error.c_str());
-      return oneWeekWeatherForecast;
+      return "?";
     }
 
-    for (int day = 0; day < 7; day++) {
-      oneWeekWeatherForecast.days[day] = {
-        doc["daily"][day]["dt"],
-        doc["daily"][day]["weather"][0]["icon"],
-        doc["daily"][day]["temp"]["min"],
-        doc["daily"][day]["temp"]["max"] 
-        };
-    }
-
-    return oneWeekWeatherForecast;
+    return doc["state"];
 
   } else {
     String error;
@@ -54,6 +51,6 @@ homeAssistantURL += entity;
     error += String(httpCode);
     Serial.println(error);
     Serial.println("");
-    return oneWeekWeatherForecast;
+    return "?";
   }
 }

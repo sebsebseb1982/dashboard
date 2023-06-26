@@ -2,12 +2,13 @@
 #include <GxEPD2_3C.h>
 #include <Fonts/FreeSans9pt7b.h>
 #include <Fonts/FreeSans12pt7b.h>
-#include <TimeLib.h>
 
 #include "wifi-connection.h"
 #include "ota.h"
 #include "weather-forecast.h"
+#include "weather-forecast-widget.h"
 #include "weather-forecast.icons.h"
+#include "home-assistant.h"
 // https://oleddisplay.squix.ch/
 #include "fonts/DejaVu_LGC_Sans_9.h"
 #include "fonts/DejaVu_LGC_Sans_12.h"
@@ -32,41 +33,7 @@ void drawCentreString(const String &buf, int x, int y) {
   display.print(buf);
 }
 
-String getDayLabel(time_t date) {
-  switch (weekday(date)) {
-    case 1:
-      return "Dimanche";
-      break;
 
-    case 2:
-      return "Lundi";
-      break;
-
-    case 3:
-      return "Mardi";
-      break;
-
-    case 4:
-      return "Mercredi";
-      break;
-
-    case 5:
-      return "Jeudi";
-      break;
-
-    case 6:
-      return "Vendredi";
-      break;
-
-    case 7:
-      return "Samedi";
-      break;
-
-    default:
-      return "???";
-      break;
-  }
-}
 
 void setup() {
   Serial.begin(115200);
@@ -82,9 +49,11 @@ void setup() {
                               // *** end of special handling for Waveshare ESP32 Driver board *** //
                               // **************************************************************** //
   OneWeekWeatherForecast oneWeekWeatherForecast = WeatherForecastService::get();
+  WeatherForecastWidget WeatherForecastWidget(oneWeekWeatherForecast, &display);
   display.setFullWindow();
   display.firstPage();
   do {
+
     display.fillScreen(GxEPD_WHITE);
     display.fillRect(
       0,
@@ -93,26 +62,7 @@ void setup() {
       SCREEN_HEIGHT,
       GxEPD_RED);
 
-    display.setTextColor(GxEPD_WHITE);
-    const char HelloEpaper[] = "23,2°C";
 
-    display.setFont(&DejaVu_LGC_Sans_32);
-    for (int dayIndex = 0; dayIndex < 7; dayIndex++) {
-      int date = oneWeekWeatherForecast.days[dayIndex].date;
-      String temperatureBuffer;
-      temperatureBuffer += getDayLabel(oneWeekWeatherForecast.days[dayIndex].date);
-      temperatureBuffer += F(" ");
-      temperatureBuffer += String(day(date));
-      temperatureBuffer += F("/");
-      temperatureBuffer += String(month(date));
-      temperatureBuffer += F(" ");
-      temperatureBuffer += String(oneWeekWeatherForecast.days[dayIndex].max, 0);
-      temperatureBuffer += F(" C");
-      drawCentreString(
-        temperatureBuffer,
-        200,
-        100 + (dayIndex * 50));
-    }
     /*
     display.setFont(&FreeSans9pt7b);
     drawCentreString(HelloEpaper, 200, 100);
@@ -128,7 +78,16 @@ void setup() {
 
     display.setFont(&DejaVu_LGC_Sans_96);
     //drawCentreString(HelloEpaper, 200, 500);
+    
 */
+    String temperature = HomeAssistant::getEntityState("sensor.temperature_maison");
+
+    drawCentreString(
+      temperature,
+      200,
+      420);
+    WeatherForecastWidget.draw();
+
   } while (display.nextPage());
 }
 

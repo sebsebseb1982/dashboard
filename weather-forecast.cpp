@@ -5,15 +5,13 @@
 #include "common.h"
 #include "weather-forecast.h"
 
+WeatherForecast::WeatherForecast() {}
 WeatherForecast::WeatherForecast(int date, String icon, float min, float max) {
   this->date = date;
   this->icon = icon;
   this->min = min;
   this->max = max;
 }
-
-
-WeatherForecast::WeatherForecast() {}
 
 OneWeekWeatherForecast WeatherForecastService::get() {
   OneWeekWeatherForecast oneWeekWeatherForecast;

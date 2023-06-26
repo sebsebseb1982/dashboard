@@ -3,7 +3,7 @@
 
 class HomeAssistant {
 public:
-  void get();
+  static String getEntityState(String entityName);
 };
 
 #endif
