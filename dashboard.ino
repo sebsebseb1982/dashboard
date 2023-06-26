@@ -1,22 +1,15 @@
 #include <GxEPD2_BW.h>
 #include <GxEPD2_3C.h>
-#include <Fonts/FreeSans9pt7b.h>
-#include <Fonts/FreeSans12pt7b.h>
 
+#include "fonts/fonts.h"
 #include "wifi-connection.h"
 #include "ota.h"
 #include "weather-forecast.h"
 #include "weather-forecast-widget.h"
 #include "weather-forecast.icons.h"
 #include "home-assistant.h"
-// https://oleddisplay.squix.ch/
-#include "fonts/DejaVu_LGC_Sans_9.h"
-#include "fonts/DejaVu_LGC_Sans_12.h"
-#include "fonts/DejaVu_LGC_Sans_24.h"
-#include "fonts/32.h"
-#include "fonts/48.h"
-#include "fonts/DejaVu_LGC_Sans_72.h"
-#include "fonts/DejaVu_LGC_Sans_96.h"
+#include "quote-of-the-day.h"
+#include "quote-of-the-day-widget.h"
 #include "common.h"
 
 // base class GxEPD2_GFX can be used to pass references or pointers to the display instance as parameter, uses ~1.2k more code
@@ -48,8 +41,7 @@ void setup() {
   SPI.begin(13, 12, 14, 15);  // map and init SPI pins SCK(13), MISO(12), MOSI(14), SS(15)
                               // *** end of special handling for Waveshare ESP32 Driver board *** //
                               // **************************************************************** //
-  OneWeekWeatherForecast oneWeekWeatherForecast = WeatherForecastService::get();
-  WeatherForecastWidget WeatherForecastWidget(oneWeekWeatherForecast, &display);
+
   display.setFullWindow();
   display.firstPage();
   do {
@@ -80,14 +72,26 @@ void setup() {
     //drawCentreString(HelloEpaper, 200, 500);
     
 */
+
     String temperature = HomeAssistant::getEntityState("sensor.temperature_maison");
 
     drawCentreString(
       temperature,
       200,
       420);
-    WeatherForecastWidget.draw();
 
+    // One week weather forecast
+    OneWeekWeatherForecast oneWeekWeatherForecast = WeatherForecastService::get();
+    WeatherForecastWidget weatherForecastWidget(
+      oneWeekWeatherForecast,
+      &display);
+    weatherForecastWidget.draw();
+
+    // Quote of the day
+    QuoteOfTheDayWidget quoteOfTheDayWidget(
+      QuoteOfTheDayService::get(),
+      &display);
+    quoteOfTheDayWidget.draw();
   } while (display.nextPage());
 }
 

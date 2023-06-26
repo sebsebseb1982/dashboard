@@ -1,10 +1,9 @@
 #include <GxEPD2_3C.h>
 #include <TimeLib.h>
-#include <Fonts/FreeSans12pt7b.h>
 
+#include "fonts/fonts.h"
 #include "weather-forecast.h"
 #include "weather-forecast-widget.h"
-#include "fonts/32.h"
 
 WeatherForecastWidget::WeatherForecastWidget(OneWeekWeatherForecast oneWeekWeatherForecast, GxEPD2_3C<GxEPD2_750c_Z90, 264> *display) {
   this->oneWeekWeatherForecast = oneWeekWeatherForecast;
