@@ -23,6 +23,126 @@ void GFX::drawRightAlignedString(const String buf, int x, int y) {
   this->display->print(buf);
 }
 
+void GFX::drawDegreeSymbol(int x, int y, int radius, uint16_t symbolColor, uint16_t backgroundColor) {
+  int innerRadius = radius * 0.5;
+
+  if (innerRadius != radius) {
+    this->display->fillCircle(
+      x,
+      y,
+      radius,
+      symbolColor);
+    this->display->fillCircle(
+      x,
+      y,
+      innerRadius,
+      backgroundColor);
+  } else {
+    this->display->drawCircle(
+      x,
+      y,
+      radius,
+      symbolColor);
+  }
+}
+
+void GFX::drawHalftonePoints(int x, int y, int width, int height) {
+  int pointDistance = 16;
+  int lineCount = 0;
+
+  for (int pointY = y; pointY < y + height; pointY += pointDistance * 0.866) {
+    for (int pointX = x; pointX < x + width; pointX += pointDistance) {
+      int xOffset = 0;
+      if ((lineCount % 2) == 0) {
+        xOffset -= (pointDistance * 0.866) / 2;
+      }
+      float xRatio = (1.0 * (pointX + xOffset - x)) / width;
+      this->display->fillCircle(
+        pointX + xOffset,
+        pointY,
+        0.6 * pointDistance * (1.0 - xRatio),
+        GxEPD_RED);
+    }
+    lineCount++;
+  }
+}
+
+void GFX::greyed(int x, int y, int width, int height, uint16_t color) {
+  for (int pointY = y; pointY < y + height; pointY++) {
+    for (int pointX = x + y % 2; pointX < x + width; pointX += 2) {
+      this->display->drawPixel(
+        pointX,
+        pointY,
+        color);
+    }
+  }
+}
+
+void GFX::darklyGreyed(int x, int y, int width, int height, uint16_t color) {
+  for (int pointY = y; pointY < y + height; pointY += 2) {
+    this->display->drawLine(
+      x,
+      pointY,
+      x + width,
+      pointY,
+      color);
+  }
+  for (int pointX = x; pointX < x + width; pointX += 2) {
+    this->display->drawLine(
+      pointX,
+      y,
+      pointX,
+      y + height,
+      color);
+  }
+}
+
+void GFX::veryDarklyGreyed(int x, int y, int width, int height, uint16_t color) {
+  for (int pointY = y; pointY < y + height; pointY++) {
+    if (pointY % 3 == 1 || pointY % 3 == 2) {
+      this->display->drawLine(
+        x,
+        pointY,
+        x + width,
+        pointY,
+        color);
+    }
+  }
+  for (int pointX = x; pointX < x + width; pointX++) {
+    if (pointX % 3 == 1 || pointX % 3 == 2) {
+      this->display->drawLine(
+        pointX,
+        y,
+        pointX,
+        y + height,
+        color);
+    }
+  }
+}
+
+void GFX::drawHorizontalSeparator(int x, int y, int width, int thickness, uint16_t color) {
+  this->display->fillCircle(
+    x,
+    y,
+    thickness / 2,
+    color);
+
+  this->display->fillRect(
+    x,
+    y - thickness / 2,
+    width,
+    thickness,
+    color);
+
+  this->display->fillCircle(
+    x + width,
+    y,
+    thickness / 2,
+    color);
+}
+void GFX::drawVerticalSeparator(int x, int y, int height, int thickness, uint16_t color) {
+}
+
 void GFX::drawFloatingText(const String &buf, int x, int y, int maxWidth, int &height) {
   int wordIndex = 0;
   int lineIndex = 0;
@@ -61,10 +181,9 @@ void GFX::drawFloatingText(const String &buf, int x, int y, int maxWidth, int &h
   height = (lineIndex + 1) * LINE_HEIGHT;
 }
 
-String GFX::getValue(String data, char separator, int index)
-{
+String GFX::getValue(String data, char separator, int index) {
   int found = 0;
-  int strIndex[] = {0, -1};
+  int strIndex[] = { 0, -1 };
   int maxIndex = data.length() - 1;
 
   for (int i = 0; i <= maxIndex && found <= index; i++) {

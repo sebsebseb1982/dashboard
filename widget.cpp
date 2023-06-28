@@ -2,7 +2,6 @@
 #include <GxEPD2_3C.h>
 #include "widget.h"
 
-
 Widget::Widget(
   int xPosition,
   int yPosition,
@@ -16,4 +15,11 @@ Widget::Widget(
   this->height = height;
   this->backgroundColor = backgroundColor;
   this->display = display;
+
+  this->display->fillRect(
+    xPosition,
+    yPosition,
+    width,
+    height,
+    backgroundColor);
 }

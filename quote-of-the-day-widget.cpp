@@ -13,8 +13,8 @@ QuoteOfTheDayWidget::QuoteOfTheDayWidget(
   int width,
   int height,
   uint16_t backgroundColor,
-GxEPD2_3C<GxEPD2_750c_Z90, 264> *display,
-    QuoteOfTheDay quoteOfTheDay)
+  GxEPD2_3C<GxEPD2_750c_Z90, 264> *display,
+  QuoteOfTheDay quoteOfTheDay)
   : Widget(
     xPosition,
     yPosition,
@@ -22,13 +22,15 @@ GxEPD2_3C<GxEPD2_750c_Z90, 264> *display,
     height,
     backgroundColor,
     display) {
-  this->quoteOfTheDay = quoteOfTheDay;
+
+      // FIXME comprendre pourquoi la ligne suivante est si capitale
   this->display = display;
+  this->quoteOfTheDay = quoteOfTheDay;
   this->gfx = GFX(display);
 }
 
 void QuoteOfTheDayWidget::draw() {
-  int y = 380;
+  int y = yPosition+65;
 
   this->display->setTextColor(GxEPD_BLACK);
   this->display->setFont(&FreeSans9pt7b);

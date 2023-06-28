@@ -6,27 +6,18 @@
 #include "ota.h"
 #include "weather-forecast.h"
 #include "weather-forecast-widget.h"
-#include "weather-forecast.icons.h"
 #include "home-assistant.h"
 #include "quote-of-the-day.h"
 #include "quote-of-the-day-widget.h"
+#include "live-view-widget.h"
 #include "common.h"
+#include "gfx.h"
 
 // base class GxEPD2_GFX can be used to pass references or pointers to the display instance as parameter, uses ~1.2k more code
 // enable or disable GxEPD2_GFX base class
 #define ENABLE_GxEPD2_GFX 0
 
 GxEPD2_3C< GxEPD2_750c_Z90, GxEPD2_750c_Z90::HEIGHT / 2 > display(GxEPD2_750c_Z90(/*CS=*/15, /*DC=*/27, /*RST=*/26, /*BUSY=*/25));  // GDEH075Z90 880x528
-
-void drawCentreString(const String &buf, int x, int y) {
-  int16_t x1, y1;
-  uint16_t w, h;
-  display.getTextBounds(buf, x, y, &x1, &y1, &w, &h);
-  display.setCursor(x - w / 2, y);
-  display.print(buf);
-}
-
-
 
 void setup() {
   Serial.begin(115200);
@@ -47,52 +38,47 @@ void setup() {
   do {
 
     display.fillScreen(GxEPD_WHITE);
-    display.fillRect(
+
+    int verticalSplitX = SCREEN_WIDTH / 3;
+    int horizontalSplitY = 350;
+    OneWeekWeatherForecast oneWeekWeatherForecast = WeatherForecastService::get();
+
+    // Quote of the day
+    QuoteOfTheDayWidget quoteOfTheDayWidget(
+      verticalSplitX,
+      horizontalSplitY,
+      SCREEN_WIDTH - verticalSplitX,
+      SCREEN_HEIGHT - horizontalSplitY,
+      GxEPD_WHITE,
+      &display,
+      QuoteOfTheDayService::get());
+    quoteOfTheDayWidget.draw();
+
+    // Halftone points
+    GFX gfx(&display);
+    gfx.drawHalftonePoints(
+      verticalSplitX,
+      0,
+      200,
+      SCREEN_HEIGHT + 10);
+
+    // Live view
+    LiveViewWidget liveViewWidget(
       0,
       0,
-      SCREEN_WIDTH / 2,
+      verticalSplitX - 1,
       SCREEN_HEIGHT,
-      GxEPD_RED);
-
-
-    /*
-    display.setFont(&FreeSans9pt7b);
-    drawCentreString(HelloEpaper, 200, 100);
-
-    
-    //drawCentreString(HelloEpaper, 200, 200);
-
-    display.setFont(&DejaVu_LGC_Sans_48);
-    //drawCentreString(HelloEpaper, 200, 300);
-
-    display.setFont(&DejaVu_LGC_Sans_72);
-    //drawCentreString(HelloEpaper, 200, 400);
-
-    display.setFont(&DejaVu_LGC_Sans_96);
-    //drawCentreString(HelloEpaper, 200, 500);
-    
-*/
-
-    String temperature = HomeAssistant::getEntityState("sensor.temperature_maison");
-
+      GxEPD_RED,
+      &display,
+      oneWeekWeatherForecast);
+    liveViewWidget.draw();
 
     // One week weather forecast
-    OneWeekWeatherForecast oneWeekWeatherForecast = WeatherForecastService::get();
     WeatherForecastWidget weatherForecastWidget(
       oneWeekWeatherForecast,
       &display);
     weatherForecastWidget.draw();
 
-    // Quote of the day
-    QuoteOfTheDayWidget quoteOfTheDayWidget(
-      0,
-      0,
-      0,
-      0,
-      GxEPD_RED,
-      &display,
-      QuoteOfTheDayService::get());
-    quoteOfTheDayWidget.draw();
   } while (display.nextPage());
 }
 
