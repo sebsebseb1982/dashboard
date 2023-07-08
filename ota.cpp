@@ -39,3 +39,8 @@ void OTA::setup() {
 void OTA::loop() {
   ArduinoOTA.handle();
 }
+
+boolean OTA::isEnabled() {
+  pinMode(ENABLE_OTA_BUTTON_PIN, INPUT);
+  return digitalRead(ENABLE_OTA_BUTTON_PIN) == HIGH;
+}

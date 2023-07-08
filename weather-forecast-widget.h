@@ -35,8 +35,6 @@ public:
 private:
   void drawBackground();
   void drawData();
-  // TODO à déplacer
-  String getDayLabel(time_t date);
   OneWeekWeatherForecast oneWeekWeatherForecast;
   GxEPD2_3C<GxEPD2_750c_Z90, 264> *display;
   GFX gfx;

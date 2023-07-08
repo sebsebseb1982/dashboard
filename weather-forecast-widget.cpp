@@ -4,6 +4,7 @@
 #include "fonts/fonts.h"
 #include "weather-forecast.h"
 #include "weather-forecast-widget.h"
+#include "date-utils.h"
 #include "images/weather-forecast/weather-forecast.icons.44x44.h"
 
 WeatherForecastWidget::WeatherForecastWidget(OneWeekWeatherForecast oneWeekWeatherForecast, GxEPD2_3C<GxEPD2_750c_Z90, 264> *display) {
@@ -20,43 +21,6 @@ void WeatherForecastWidget::draw() {
 void WeatherForecastWidget::drawBackground() {
 }
 
-// TODO à déplacer
-String WeatherForecastWidget::getDayLabel(time_t date) {
-  switch (weekday(date)) {
-    case 1:
-      return "Dimanche";
-      break;
-
-    case 2:
-      return "Lundi";
-      break;
-
-    case 3:
-      return "Mardi";
-      break;
-
-    case 4:
-      return "Mercredi";
-      break;
-
-    case 5:
-      return "Jeudi";
-      break;
-
-    case 6:
-      return "Vendredi";
-      break;
-
-    case 7:
-      return "Samedi";
-      break;
-
-    default:
-      return "???";
-      break;
-  }
-}
-
 void WeatherForecastWidget::drawData() {
   this->display->setTextColor(GxEPD_BLACK);
   this->display->setFont(&FreeSans12pt7b);
@@ -67,7 +31,7 @@ void WeatherForecastWidget::drawData() {
   for (int dayIndex = 1; dayIndex < 7; dayIndex++) {
     int date = this->oneWeekWeatherForecast.days[dayIndex].date;
     String currentDay;
-    currentDay += this->getDayLabel(date);
+    currentDay += DateUtils::translateDayOfTheWeek(weekday(date));
     currentDay += F(" ");
     currentDay += String(day(date));
     currentDay += F("/");

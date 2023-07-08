@@ -12,17 +12,26 @@
 #include "live-view-widget.h"
 #include "common.h"
 #include "gfx.h"
+#include "battery.h"
 
 // base class GxEPD2_GFX can be used to pass references or pointers to the display instance as parameter, uses ~1.2k more code
 // enable or disable GxEPD2_GFX base class
 #define ENABLE_GxEPD2_GFX 0
+#define REFRESH_RATE_IN_MINUTES 59
 
 GxEPD2_3C< GxEPD2_750c_Z90, GxEPD2_750c_Z90::HEIGHT / 2 > display(GxEPD2_750c_Z90(/*CS=*/15, /*DC=*/27, /*RST=*/26, /*BUSY=*/25));  // GDEH075Z90 880x528
+boolean batteryCharging = false;
+float batteryVoltage;
+unsigned long nextRefresh;
+boolean otaEnabled = false;
 
 void setup() {
   Serial.begin(115200);
+
+  batteryVoltage = Battery::measureVoltage();
+  batteryCharging = batteryVoltage < 5;
+
   WiFiConnection::setup();
-  OTA::setup();
 
   display.init(115200);  // uses standard SPI pins, e.g. SCK(18), MISO(19), MOSI(23), SS(5)
   // *** special handling for Waveshare ESP32 Driver board *** //
@@ -33,6 +42,15 @@ void setup() {
                               // *** end of special handling for Waveshare ESP32 Driver board *** //
                               // **************************************************************** //
 
+  if (OTA::isEnabled()) {
+    OTA::setup();
+    otaEnabled = true;
+  }
+
+  nextRefresh = millis();
+}
+
+void refreshScreen() {
   display.setFullWindow();
   display.firstPage();
   do {
@@ -79,10 +97,43 @@ void setup() {
       &display);
     weatherForecastWidget.draw();
 
+    display.setTextColor(GxEPD_WHITE);
+    display.setFont(&FreeSans9pt7b);
+    display.setCursor(0, 13);
+    String temp;
+    if (otaEnabled) {
+      temp += "OTA";
+      temp += F(" ");
+      temp += String(batteryVoltage, 2);
+      temp += F("v");
+    }
+
+    display.print(temp);
+
   } while (display.nextPage());
 }
 
 void loop() {
+  batteryVoltage = Battery::measureVoltage();
+  batteryCharging = batteryVoltage < 5;
+
+  if (!otaEnabled) {
+    refreshScreen();
+    display.powerOff();
+
+    esp_sleep_enable_timer_wakeup(REFRESH_RATE_IN_MINUTES * 60e6);
+    Serial.print("Going back to sleep for ");
+    Serial.print(REFRESH_RATE_IN_MINUTES);
+    Serial.println(" minutes.");
+    Serial.flush();
+    esp_deep_sleep_start();
+  }
+
   WiFiConnection::loop();
   OTA::loop();
+
+  if (millis() > nextRefresh) {
+    nextRefresh = millis() + REFRESH_RATE_IN_MINUTES * 60e6;
+    refreshScreen();
+  }
 }

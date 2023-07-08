@@ -2,6 +2,7 @@
 #define LIVE_VIEW_WIDGET_H
 
 #include <GxEPD2_3C.h>
+#include <TimeLib.h>
 
 #include "widget.h"
 #include "gfx.h"

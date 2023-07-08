@@ -4,6 +4,7 @@
 #include "gfx.h"
 #include "live-view-widget.h"
 #include "home-assistant.h"
+#include "date-utils.h"
 #include "fonts/fonts.h"
 #include "images/weather-forecast/weather-forecast.icons.150x150.h"
 #include "images/wind.h"
@@ -74,13 +75,20 @@ void LiveViewWidget::drawWeatherForecast() {
   drawBigTemperature(
     weatherForecastTemperature,
     xMiddle,
-    yPosition + 190);
+    yPosition + 205);
 
   display->setFont(&FreeSans12pt7b);
+  String currentDate;
+  currentDate += DateUtils::translateDayOfTheWeek(weekday(oneWeekWeatherForecast.days[0].date));
+  currentDate += F(" ");
+  currentDate += String(day(oneWeekWeatherForecast.days[0].date));
+  currentDate += F(" ");
+  currentDate += DateUtils::translateMonth(month(oneWeekWeatherForecast.days[0].date));
+
   gfx.drawCentreString(
-    "Mercredi 28 juin",
+    currentDate,
     xMiddle,
-    yPosition + 220);
+    yPosition + 230);
 
   int iconSize = 150;
   int iconX = xMiddle - iconSize / 2;
@@ -299,6 +307,13 @@ void LiveViewWidget::drawTemperatureBox(int x, int y, int width, int height, Str
     temperatureString,
     x + width / 2,
     y + 80);
+
+  gfx.drawDegreeSymbol(
+    x + (width / 2) + 15,
+    y + 65,
+    2,
+    GxEPD_WHITE,
+    GxEPD_RED);
 }
 
 void LiveViewWidget::drawBox(int x, int y, int width, int height, uint16_t color) {
