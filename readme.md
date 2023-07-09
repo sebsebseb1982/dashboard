@@ -1,0 +1,2 @@
+https://github.com/home-assistant/core/blob/dev/homeassistant/components/meteo_france/const.py#L42
+https://yablyk.com/fr/precipitations-en-millimetres-comment-savoir-sil-va-pleuvoir-abondamment-ou-non/

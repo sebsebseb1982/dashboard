@@ -51,6 +51,10 @@ void setup() {
 }
 
 void refreshScreen() {
+
+  OneWeekWeatherForecast oneWeekWeatherForecast = WeatherForecastService::get();
+  QuoteOfTheDay quoteOfTheDay = QuoteOfTheDayService::get();
+
   display.setFullWindow();
   display.firstPage();
   do {
@@ -59,7 +63,6 @@ void refreshScreen() {
 
     int verticalSplitX = SCREEN_WIDTH / 3;
     int horizontalSplitY = 350;
-    OneWeekWeatherForecast oneWeekWeatherForecast = WeatherForecastService::get();
 
     // Quote of the day
     QuoteOfTheDayWidget quoteOfTheDayWidget(
@@ -69,7 +72,7 @@ void refreshScreen() {
       SCREEN_HEIGHT - horizontalSplitY,
       GxEPD_WHITE,
       &display,
-      QuoteOfTheDayService::get());
+      quoteOfTheDay);
     quoteOfTheDayWidget.draw();
 
     // Halftone points

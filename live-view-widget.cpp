@@ -71,7 +71,7 @@ void LiveViewWidget::draw() {
 
 void LiveViewWidget::drawWeatherForecast() {
   int xMiddle = xPosition + (width / 2) + 20;
-  float weatherForecastTemperature = oneWeekWeatherForecast.days[0].max;
+  float weatherForecastTemperature = oneWeekWeatherForecast.days[0].temperature;
   drawBigTemperature(
     weatherForecastTemperature,
     xMiddle,
@@ -79,11 +79,11 @@ void LiveViewWidget::drawWeatherForecast() {
 
   display->setFont(&FreeSans12pt7b);
   String currentDate;
-  currentDate += DateUtils::translateDayOfTheWeek(weekday(oneWeekWeatherForecast.days[0].date));
+  currentDate += DateUtils::translateDayOfTheWeek(weekday(oneWeekWeatherForecast.days[0].dateTime));
   currentDate += F(" ");
-  currentDate += String(day(oneWeekWeatherForecast.days[0].date));
+  currentDate += String(day(oneWeekWeatherForecast.days[0].dateTime));
   currentDate += F(" ");
-  currentDate += DateUtils::translateMonth(month(oneWeekWeatherForecast.days[0].date));
+  currentDate += DateUtils::translateMonth(month(oneWeekWeatherForecast.days[0].dateTime));
 
   gfx.drawCentreString(
     currentDate,
@@ -95,76 +95,92 @@ void LiveViewWidget::drawWeatherForecast() {
   int iconY = yPosition + 10;
 
   uint16_t iconColor = GxEPD_WHITE;
-  String icon = oneWeekWeatherForecast.days[0].icon;
-  if (icon.startsWith("01")) {
+  String condition = oneWeekWeatherForecast.days[0].condition;
+  if (condition.equals("sunny")) {
     display->drawBitmap(
       iconX,
       iconY,
-      clear_sky,
+      sunny,
       iconSize,
       iconSize,
       iconColor);
-  } else if (icon.startsWith("02")) {
+  } else if (condition.equals("partlycloudy")) {
     display->drawBitmap(
       iconX,
       iconY,
-      few_clouds,
+      partlycloudy,
       iconSize,
       iconSize,
       iconColor);
-  } else if (icon.startsWith("03")) {
+  } else if (condition.equals("cloudy")) {
     display->drawBitmap(
       iconX,
       iconY,
-      scattered_clouds,
+      cloudy,
       iconSize,
       iconSize,
       iconColor);
-  } else if (icon.startsWith("04")) {
+  } else if (condition.equals("fog")) {
     display->drawBitmap(
       iconX,
       iconY,
-      broken_clouds,
+      fog,
       iconSize,
       iconSize,
       iconColor);
-  } else if (icon.startsWith("09")) {
+  } else if (condition.equals("hail")) {
     display->drawBitmap(
       iconX,
       iconY,
-      shower_rain,
+      hail,
       iconSize,
       iconSize,
       iconColor);
-  } else if (icon.startsWith("10")) {
+  } else if (condition.equals("lightning")) {
     display->drawBitmap(
       iconX,
       iconY,
-      rain,
+      lightning,
       iconSize,
       iconSize,
       iconColor);
-  } else if (icon.startsWith("11")) {
+  } else if (condition.equals("lightningrainy")) {
     display->drawBitmap(
       iconX,
       iconY,
-      thunderstorm,
+      lightningrainy,
       iconSize,
       iconSize,
       iconColor);
-  } else if (icon.startsWith("13")) {
+  } else if (condition.equals("pouring")) {
     display->drawBitmap(
       iconX,
       iconY,
-      snow,
+      pouring,
       iconSize,
       iconSize,
       iconColor);
-  } else if (icon.startsWith("50")) {
+  } else if (condition.equals("rainy")) {
     display->drawBitmap(
       iconX,
       iconY,
-      mist,
+      rainy,
+      iconSize,
+      iconSize,
+      iconColor);
+  } else if (condition.equals("snowy")) {
+    display->drawBitmap(
+      iconX,
+      iconY,
+      snowy,
+      iconSize,
+      iconSize,
+      iconColor);
+  } else if (condition.equals("snowyrainy")) {
+    display->drawBitmap(
+      iconX,
+      iconY,
+      snowyrainy,
       iconSize,
       iconSize,
       iconColor);

@@ -29,14 +29,13 @@ void WeatherForecastWidget::drawData() {
   int startY = 25;
 
   for (int dayIndex = 1; dayIndex < 7; dayIndex++) {
-    int date = this->oneWeekWeatherForecast.days[dayIndex].date;
+    time_t dateTime = this->oneWeekWeatherForecast.days[dayIndex].dateTime;
     String currentDay;
-    currentDay += DateUtils::translateDayOfTheWeek(weekday(date));
+    currentDay += DateUtils::translateDayOfTheWeek(weekday(dateTime));
     currentDay += F(" ");
-    currentDay += String(day(date));
+    currentDay += String(day(dateTime));
     currentDay += F("/");
-    currentDay += String(month(date));
-    //currentDay += this->oneWeekWeatherForecast.days[dayIndex].icon;
+    currentDay += String(month(dateTime));
     display->setCursor(
       startX,
       startY + (dayIndex * 50));
@@ -45,83 +44,105 @@ void WeatherForecastWidget::drawData() {
     int iconX = startX + 210;
     int iconY = startY + (dayIndex * 50) - 35;
     int iconSize = 44;
-    String icon = this->oneWeekWeatherForecast.days[dayIndex].icon;
-    if (icon.startsWith("01")) {
+    uint16_t iconColor = GxEPD_RED;
+    String condition = this->oneWeekWeatherForecast.days[dayIndex].condition;
+    if (condition.equals("sunny")) {
       display->drawBitmap(
         iconX,
         iconY,
-        clear_sky,
+        sunny,
         iconSize,
         iconSize,
-        GxEPD_RED);
-    } else if (icon.startsWith("02")) {
+        iconColor);
+    } else if (condition.equals("partlycloudy")) {
       display->drawBitmap(
         iconX,
         iconY,
-        few_clouds,
+        partlycloudy,
         iconSize,
         iconSize,
-        GxEPD_RED);
-    } else if (icon.startsWith("03")) {
+        iconColor);
+    } else if (condition.equals("cloudy")) {
       display->drawBitmap(
         iconX,
         iconY,
-        scattered_clouds,
+        cloudy,
         iconSize,
         iconSize,
-        GxEPD_RED);
-    } else if (icon.startsWith("04")) {
+        iconColor);
+    } else if (condition.equals("fog")) {
       display->drawBitmap(
         iconX,
         iconY,
-        broken_clouds,
+        fog,
         iconSize,
         iconSize,
-        GxEPD_RED);
-    } else if (icon.startsWith("09")) {
+        iconColor);
+    } else if (condition.equals("hail")) {
       display->drawBitmap(
         iconX,
         iconY,
-        shower_rain,
+        hail,
         iconSize,
         iconSize,
-        GxEPD_RED);
-    } else if (icon.startsWith("10")) {
+        iconColor);
+    } else if (condition.equals("lightning")) {
       display->drawBitmap(
         iconX,
         iconY,
-        rain,
+        lightning,
         iconSize,
         iconSize,
-        GxEPD_RED);
-    } else if (icon.startsWith("11")) {
+        iconColor);
+    } else if (condition.equals("lightningrainy")) {
       display->drawBitmap(
         iconX,
         iconY,
-        thunderstorm,
+        lightningrainy,
         iconSize,
         iconSize,
-        GxEPD_RED);
-    } else if (icon.startsWith("13")) {
+        iconColor);
+    } else if (condition.equals("pouring")) {
       display->drawBitmap(
         iconX,
         iconY,
-        snow,
+        pouring,
         iconSize,
         iconSize,
-        GxEPD_RED);
-    } else if (icon.startsWith("50")) {
+        iconColor);
+    } else if (condition.equals("rainy")) {
       display->drawBitmap(
         iconX,
         iconY,
-        mist,
+        rainy,
         iconSize,
         iconSize,
-        GxEPD_RED);
+        iconColor);
+    } else if (condition.equals("snowy")) {
+      display->drawBitmap(
+        iconX,
+        iconY,
+        snowy,
+        iconSize,
+        iconSize,
+        iconColor);
+    } else if (condition.equals("snowyrainy")) {
+      display->drawBitmap(
+        iconX,
+        iconY,
+        snowyrainy,
+        iconSize,
+        iconSize,
+        iconColor);
+    } else {
+      display->setCursor(
+        iconX,
+        iconY);
+      display->print(condition);
     }
 
     String currentTermperature;
-    currentTermperature += String(this->oneWeekWeatherForecast.days[dayIndex].max, 0);
+    currentTermperature += String(this->oneWeekWeatherForecast.days[dayIndex].temperature, 0);
     currentTermperature += F(" C");
     int temperatureX = startX + 280;
     int temperatureY = startY + (dayIndex * 50);

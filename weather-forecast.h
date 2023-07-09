@@ -2,19 +2,21 @@
 #define WEATHER_FORECAST_H
 
 #include <Arduino.h>
+#include <TimeLib.h>
 
 class WeatherForecast {
 public:
   WeatherForecast();
-  WeatherForecast(int date, String icon, float min, float max);
-  int date;
-  String icon;
-  float min;
-  float max;
+  WeatherForecast(time_t dateTime, String condition, float temperature, float temperatureLow, float precipitation);
+  time_t dateTime;
+  String condition;
+  float temperature;
+  float temperatureLow;
+  float precipitation;
 };
 
 struct OneWeekWeatherForecast {
-    WeatherForecast days[7];
+  WeatherForecast days[7];
 };
 
 class WeatherForecastService {

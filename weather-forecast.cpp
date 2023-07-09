@@ -1,27 +1,38 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
+#include <TimeLib.h>
 
 #include "arduino_secrets.h"
 #include "common.h"
 #include "weather-forecast.h"
 
 WeatherForecast::WeatherForecast() {}
-WeatherForecast::WeatherForecast(int date, String icon, float min, float max) {
-  this->date = date;
-  this->icon = icon;
-  this->min = min;
-  this->max = max;
+WeatherForecast::WeatherForecast(time_t dateTime, String condition, float temperature, float temperatureLow, float precipitation) {
+  this->dateTime = dateTime;
+  this->condition = condition;
+  this->temperature = temperature;
+  this->temperatureLow = temperatureLow;
+  this->precipitation = precipitation;
 }
 
 OneWeekWeatherForecast WeatherForecastService::get() {
   OneWeekWeatherForecast oneWeekWeatherForecast;
   HTTPClient http;
-  http.begin(SECRET_API_OPENWEATHERMAP, SECRET_ROOT_CA);
+  String homeAssistantWeatherURL;
+  homeAssistantWeatherURL += F("http://");
+  homeAssistantWeatherURL += SECRET_HOME_ASSISTANT_HOST;
+  homeAssistantWeatherURL += F("/api/states/weather.talence");
+  http.begin(homeAssistantWeatherURL);
+
+  String bearer;
+  bearer += F("Bearer ");
+  bearer += SECRET_HOME_ASSISTANT_TOKEN;
+  http.addHeader("Authorization", bearer);
 
   String message;
   message += F("Récupération de la météo");
   message += F(" (GET ");
-  message += SECRET_API_OPENWEATHERMAP;
+  message += homeAssistantWeatherURL;
   message += F(")");
   Serial.println(message);
 
@@ -48,13 +59,25 @@ OneWeekWeatherForecast WeatherForecastService::get() {
       return oneWeekWeatherForecast;
     }
 
-    for (int day = 0; day < 7; day++) {
-      oneWeekWeatherForecast.days[day] = {
-        doc["daily"][day]["dt"],
-        doc["daily"][day]["weather"][0]["icon"],
-        doc["daily"][day]["temp"]["min"],
-        doc["daily"][day]["temp"]["max"] 
-        };
+    for (int dayIndex = 0; dayIndex < 7; dayIndex++) {
+      TimeElements tm = {};
+      int parsedYear, parsedMonth, parsedDay;
+      const char* datetime = doc["attributes"]["forecast"][dayIndex]["datetime"];
+      sscanf(datetime, "%d-%d-%dT", &parsedYear, &parsedMonth, &parsedDay);
+      tm.Year = CalendarYrToTm(parsedYear);
+      tm.Month = parsedMonth;
+      tm.Day = parsedDay;
+      time_t parsedDatetime = makeTime(tm);
+
+      String condition = doc["attributes"]["forecast"][dayIndex]["condition"];
+
+      oneWeekWeatherForecast.days[dayIndex] = {
+        parsedDatetime,
+        condition,
+        doc["attributes"]["forecast"][dayIndex]["temperature"],
+        doc["attributes"]["forecast"][dayIndex]["templow"],
+        doc["attributes"]["forecast"][dayIndex]["precipitation"]
+      };
     }
 
     return oneWeekWeatherForecast;
